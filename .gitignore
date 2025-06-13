@@ -1,0 +1,29 @@
+# Arquivos gerados pelo Robot Framework
+log.html
+report.html
+output.xml
+playwright-log.txt
+
+# Diretórios gerados pelo Browser/Playwright
+browser/
+traces/
+screenshots/
+
+# Arquivos Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Ambientes virtuais
+venv/
+env/
+ENV/
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
