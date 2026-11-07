@@ -1,19 +1,42 @@
-name: Testes E2E
+name: Testes
 
 on:
   push:
     branches: [main]
   pull_request:
   workflow_dispatch:
-  schedule:
-    # Toda segunda às 9h (horário de Brasília) para detectar mudanças no site
-    - cron: "0 12 * * 1"
+    inputs:
+      e2e:
+        description: "Rodar também os testes E2E contra o site (pode ser bloqueado pelo anti-robô do site)"
+        type: boolean
+        default: false
 
 jobs:
-  robot:
+  validacao:
+    name: Validação (dry-run)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Instalar Robot Framework
+        run: python -m pip install -r requirements.txt
+
+      # Valida sintaxe, keywords e argumentos de todos os testes sem abrir o navegador
+      - name: Robot dry-run
+        run: python -m robot --dryrun --outputdir results tests
+
+  e2e:
+    name: E2E no site
+    if: github.event_name == 'workflow_dispatch' && inputs.e2e
+    needs: validacao
     runs-on: ubuntu-latest
     timeout-minutes: 20
-
     steps:
       - uses: actions/checkout@v4
 
@@ -24,7 +47,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
 
       - name: Instalar dependências
         run: |

@@ -26,7 +26,14 @@ Abrir MenuDino
     New Browser    ${BROWSER}    headless=${HEADLESS}
     New Context    locale=pt-BR    viewport={'width': 1366, 'height': 768}
     New Page    ${URL}
-    Wait For Elements State    ${CAMPO_BUSCA}    visible
+    ${carregou}=    Run Keyword And Return Status
+    ...    Wait For Elements State    ${CAMPO_BUSCA}    visible
+    IF    not ${carregou}
+        ${titulo}=    Get Title
+        ${url}=    Get Url
+        Take Screenshot    filename=pagina-inicial-nao-carregou
+        Fail    A página inicial não exibiu o campo de CEP (título: "${titulo}", URL: ${url}). Se o título for de verificação de segurança, o site bloqueou o acesso automatizado (comum em servidores de CI).
+    END
 
 Fechar Navegador
     Close Browser    ALL

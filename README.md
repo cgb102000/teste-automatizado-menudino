@@ -1,6 +1,6 @@
 # Teste automatizado - MenuDino
 
-[![Testes E2E](https://github.com/cgb102000/teste-automatizado-menudino/actions/workflows/testes.yml/badge.svg)](https://github.com/cgb102000/teste-automatizado-menudino/actions/workflows/testes.yml)
+[![Testes](https://github.com/cgb102000/teste-automatizado-menudino/actions/workflows/testes.yml/badge.svg)](https://github.com/cgb102000/teste-automatizado-menudino/actions/workflows/testes.yml)
 
 Testes end-to-end do fluxo de **endereço de entrega por CEP** no site [MenuDino](https://menudino.com), escritos com **Robot Framework** e a **Browser Library** (Playwright).
 
@@ -18,7 +18,7 @@ Testes end-to-end do fluxo de **endereço de entrega por CEP** no site [MenuDino
 │   └── endereco_por_cep.robot     # Casos de teste e massa de dados
 ├── resources/
 │   └── menudino.resource          # Keywords reutilizáveis e seletores
-├── .github/workflows/testes.yml   # CI: roda a cada push e toda segunda-feira
+├── .github/workflows/testes.yml   # CI: dry-run a cada push; E2E sob demanda
 ├── requirements.txt
 ├── instalar.bat                   # Instalação no Windows
 ├── verificar_instalacao.bat
@@ -32,7 +32,7 @@ Boas práticas aplicadas:
 - **Asserções de verdade**: o teste falha se o endereço não for salvo ou se a página esperada não abrir. Sem `Sleep` fixo: as esperas são por estado dos elementos.
 - **Isolamento**: cada teste abre um contexto novo do navegador (sem endereço salvo) e fecha no teardown, mesmo em caso de falha.
 - **Evidências**: screenshot automático em qualquer falha, junto com `log.html` e `report.html`.
-- **CI agendada**: a execução semanal avisa quando o site muda e o teste precisa ser atualizado.
+- **CI**: a cada push, o `robot --dryrun` valida sintaxe, keywords e argumentos de todos os testes.
 
 ## Como rodar
 
@@ -62,6 +62,16 @@ python -m robot --outputdir results --include smoke tests
 ```
 
 Os resultados ficam em `results/` (`report.html`, `log.html` e screenshots de falha).
+
+## CI e o anti-robô do site
+
+O MenuDino fica atrás do Cloudflare. Nos servidores do GitHub Actions a página inicial não chega a exibir o campo de CEP (localmente o teste passa), o que indica bloqueio de acessos automatizados vindos de datacenter. Por isso:
+
+- **A cada push**: roda a validação `--dryrun`, que não acessa o site.
+- **E2E no GitHub**: só manual, em *Actions > Testes > Run workflow*, marcando a opção E2E. Pode ser bloqueado pelo site.
+- **E2E completo**: rode localmente (`executar_teste.bat`), onde o acesso é de uma conexão residencial.
+
+Se a página inicial não carregar, o teste falha com uma mensagem explicando o título e a URL recebidos, junto com um screenshot.
 
 ## Massa de dados
 
