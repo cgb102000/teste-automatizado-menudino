@@ -1,65 +1,47 @@
 @echo off
 echo ======================================
-echo  INSTALACAO AUTOMATICA - TESTE MENUDINO
+echo  INSTALACAO - TESTE MENUDINO
 echo ======================================
 echo.
 
-echo Verificando se Python esta instalado...
 python --version >nul 2>&1
 if errorlevel 1 (
-    echo ERRO: Python nao encontrado!
-    echo Por favor, instale o Python primeiro:
-    echo https://www.python.org/downloads/
-    echo.
-    echo Lembre-se de marcar "Add Python to PATH" durante a instalacao.
+    echo [ERRO] Python nao encontrado.
+    echo Instale em https://www.python.org/downloads/ marcando "Add Python to PATH".
     pause
     exit /b 1
 )
 
-echo Python encontrado!
-echo.
+node --version >nul 2>&1
+if errorlevel 1 (
+    echo [ERRO] Node.js nao encontrado. A Browser Library precisa dele.
+    echo Instale a versao LTS em https://nodejs.org/
+    pause
+    exit /b 1
+)
 
-echo Atualizando pip...
+echo [1/2] Instalando dependencias Python...
 python -m pip install --upgrade pip
-
-echo.
-echo Instalando dependencias...
-pip install -r requirements.txt
-
+python -m pip install -r requirements.txt
 if errorlevel 1 (
-    echo ERRO: Falha ao instalar dependencias!
+    echo [ERRO] Falha ao instalar as dependencias.
     pause
     exit /b 1
 )
 
 echo.
-echo Inicializando navegadores do Playwright...
-echo Tentando metodo 1...
-python -m Browser.entry init
-
+echo [2/2] Baixando o navegador Chromium do Playwright...
+python -m Browser.entry init chromium
 if errorlevel 1 (
-    echo Metodo 1 falhou. Tentando metodo alternativo...
-    python -c "from Browser.entry import main; main()" || (
-        echo ERRO: Falha ao inicializar navegadores!
-        echo.
-        echo Tente executar manualmente um dos comandos:
-        echo python -m Browser.entry init
-        echo ou
-        echo python -c "from Browser.entry import main; main()"
-        pause
-        exit /b 1
-    )
+    echo [ERRO] Falha ao inicializar o navegador. Tente: python -m Browser.entry init chromium
+    pause
+    exit /b 1
 )
 
 echo.
 echo ======================================
-echo  INSTALACAO CONCLUIDA COM SUCESSO!
+echo  INSTALACAO CONCLUIDA
 echo ======================================
-echo.
-echo Para executar o teste, use:
-echo python -m robot teste_menu_dino.robot
-echo.
-echo Ou execute o script automatico:
-echo executar_teste.bat
+echo Para rodar os testes: executar_teste.bat
 echo.
 pause
