@@ -36,36 +36,44 @@ Abrir MenuDino
     END
 
 Fechar Navegador
+    [Documentation]    Fecha todos os navegadores abertos pelo teste, mesmo em caso de falha.
     Close Browser    ALL
 
 Buscar Endereço Pelo CEP
+    [Documentation]    Digita o CEP na busca da página inicial e espera o modal de confirmação de endereço abrir.
     [Arguments]    ${cep}
     Fill Text    ${CAMPO_BUSCA}    ${cep}
     Click    ${BOTAO_BUSCAR}
     Wait For Elements State    ${MODAL_TITULO}    visible
 
 Modal Deve Mostrar A Rua
+    [Documentation]    Verifica que o modal preencheu a rua correspondente ao CEP buscado.
     [Arguments]    ${rua}
     Wait For Elements State    text=${rua}    visible
 
 Preencher Detalhes Do Endereço
+    [Documentation]    Preenche número e, quando informados, complemento e ponto de referência.
     [Arguments]    ${numero}    ${complemento}=${EMPTY}    ${referencia}=${EMPTY}
     Fill Text    ${CAMPO_NUMERO}    ${numero}
     IF    $complemento    Fill Text    ${CAMPO_COMPLEMENTO}    ${complemento}
     IF    $referencia    Fill Text    ${CAMPO_REFERENCIA}    ${referencia}
 
 Salvar Endereço
+    [Documentation]    Confirma o endereço no modal.
     Click    ${BOTAO_SALVAR}
 
 Deve Estar Na Página De Restaurantes Da Cidade
+    [Documentation]    Espera a URL terminar em /delivery/<cidade>, a página de restaurantes da cidade.
     [Arguments]    ${slug_cidade}
     Wait For Condition    Url    should end with    /delivery/${slug_cidade}
 
 Endereço De Entrega Deve Conter
+    [Documentation]    Verifica que o cabeçalho "Entregar em" mostra o endereço salvo.
     [Arguments]    ${texto}
     Wait For Elements State    ${ENTREGAR_EM}    visible
     Get Text    body    contains    ${texto}
 
 Deve Exibir Aviso De Número Obrigatório
+    [Documentation]    Verifica o aviso de número obrigatório e que o modal continua aberto.
     Wait For Elements State    ${AVISO_SEM_NUMERO}    visible
     Wait For Elements State    ${MODAL_TITULO}    visible    message=O modal fechou mesmo sem o número.
