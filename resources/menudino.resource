@@ -32,7 +32,11 @@ Abrir MenuDino
         ${titulo}=    Get Title
         ${url}=    Get Url
         Take Screenshot    filename=pagina-inicial-nao-carregou
-        Fail    A página inicial não exibiu o campo de CEP (título: "${titulo}", URL: ${url}). Se o título for de verificação de segurança, o site bloqueou o acesso automatizado (comum em servidores de CI).
+        ${mensagem}=    Catenate
+        ...    A página inicial não exibiu o campo de CEP (título: "${titulo}", URL: ${url}).
+        ...    Se o título for de verificação de segurança, o site bloqueou o acesso automatizado
+        ...    (comum em servidores de CI).
+        Fail    ${mensagem}
     END
 
 Fechar Navegador
