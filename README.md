@@ -18,7 +18,7 @@ Testes end-to-end do fluxo de **endereço de entrega por CEP** no site [MenuDino
 │   └── endereco_por_cep.robot     # Casos de teste e massa de dados
 ├── resources/
 │   └── menudino.resource          # Keywords reutilizáveis e seletores
-├── .github/workflows/testes.yml   # CI: dry-run a cada push; E2E sob demanda
+├── .github/workflows/testes.yml   # CI: lint + dry-run a cada push; E2E sob demanda
 ├── requirements.txt
 ├── instalar.bat                   # Instalação no Windows
 ├── verificar_instalacao.bat
@@ -32,7 +32,8 @@ Boas práticas aplicadas:
 - **Asserções de verdade**: o teste falha se o endereço não for salvo ou se a página esperada não abrir. Sem `Sleep` fixo: as esperas são por estado dos elementos.
 - **Isolamento**: cada teste abre um contexto novo do navegador (sem endereço salvo) e fecha no teardown, mesmo em caso de falha.
 - **Evidências**: screenshot automático em qualquer falha, junto com `log.html` e `report.html`.
-- **CI**: a cada push, o `robot --dryrun` valida sintaxe, keywords e argumentos de todos os testes.
+- **Padrão de código**: [Robocop](https://robocop.readthedocs.io) verifica documentação das keywords, tamanho de linha, nomes e outras regras.
+- **CI**: a cada push, o Robocop roda o lint e o `robot --dryrun` valida sintaxe, keywords e argumentos de todos os testes.
 
 ## Como rodar
 
@@ -59,6 +60,10 @@ python -m robot --outputdir results --variable HEADLESS:False tests
 
 # Só os testes de smoke
 python -m robot --outputdir results --include smoke tests
+
+# Lint (o mesmo do CI)
+pip install robotframework-robocop
+robocop check tests resources
 ```
 
 Os resultados ficam em `results/` (`report.html`, `log.html` e screenshots de falha).
@@ -67,7 +72,7 @@ Os resultados ficam em `results/` (`report.html`, `log.html` e screenshots de fa
 
 O MenuDino fica atrás do Cloudflare. Nos servidores do GitHub Actions a página inicial não chega a exibir o campo de CEP (localmente o teste passa), o que indica bloqueio de acessos automatizados vindos de datacenter. Por isso:
 
-- **A cada push**: roda a validação `--dryrun`, que não acessa o site.
+- **A cada push**: roda o lint (Robocop) e a validação `--dryrun`, que não acessam o site.
 - **E2E no GitHub**: só manual, em *Actions > Testes > Run workflow*, marcando a opção E2E. Pode ser bloqueado pelo site.
 - **E2E completo**: rode localmente (`executar_teste.bat`), onde o acesso é de uma conexão residencial.
 
