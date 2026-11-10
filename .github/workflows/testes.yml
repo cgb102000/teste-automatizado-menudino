@@ -25,7 +25,11 @@ jobs:
           cache: pip
 
       - name: Instalar Robot Framework
-        run: python -m pip install -r requirements.txt
+        run: python -m pip install -r requirements.txt robotframework-robocop
+
+      # Padrão de código: documentação de keywords, tamanho de linha, nomes etc.
+      - name: Lint (Robocop)
+        run: robocop check tests resources
 
       # Valida sintaxe, keywords e argumentos de todos os testes sem abrir o navegador
       - name: Robot dry-run
